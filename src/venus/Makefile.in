@@ -7,7 +7,7 @@
 
 srcdir=@srcdir@
 include @TOP_OBJDIR@/src/config/Makefile.config
-include @TOP_OBJDIR@/src/config/Makefile.lwp
+include @TOP_OBJDIR@/src/config/Makefile.pthread
 
 PROGRAMS = afsio cacheout cmdebug fs fstrace gcpags livesys twiddle up whatfid
 
@@ -32,36 +32,17 @@ AFSIO_LIBS=${TOP_LIBDIR}/libafscp.a \
 	$(top_builddir)/src/util/liboafs_util.la \
 	$(top_builddir)/src/opr/liboafs_opr.la
 
-FSLIBS=${TOP_LIBDIR}/libsys.a \
-	 ${TOP_LIBDIR}/libvldb.a \
-	 ${TOP_LIBDIR}/libubik.a \
-	 ${TOP_LIBDIR}/vlib.a \
-	 ${TOP_LIBDIR}/libauth.a \
-	 ${TOP_LIBDIR}/librxkad.a \
-	 ${TOP_LIBDIR}/libafscom_err.a \
-	 ${TOP_LIBDIR}/libcmd.a \
-	 ${TOP_LIBDIR}/libkauth.a \
-	 ${TOP_LIBDIR}/librx.a \
-	 ${TOP_LIBDIR}/libsys.a \
-	 ${TOP_LIBDIR}/liblwp.a \
-	 ${TOP_LIBDIR}/libaudit.a \
-	 $(TOP_LIBDIR)/libafsutil.a \
-	 $(TOP_LIBDIR)/libopr.a \
-	 ${TOP_LIBDIR}/libafsrfc3961.a \
-	 ${TOP_LIBDIR}/libafshcrypto_lwp.a
+FSLIBS=$(top_builddir)/src/vlserver/liboafs_vldb.la \
+	 $(top_builddir)/src/rxkad/liboafs_rxkad.la \
+	 $(top_builddir)/src/fsint/liboafs_fsint.la \
+	 $(top_builddir)/src/cmd/liboafs_cmd.la \
+	 $(top_builddir)/src/util/liboafs_util.la \
+	 $(top_builddir)/src/opr/liboafs_opr.la
 
-CMLIBS=${TOP_LIBDIR}/libsys.a \
-	 ${TOP_LIBDIR}/libafsint.a \
-	 ${TOP_LIBDIR}/librxkad.a \
-	 ${TOP_LIBDIR}/libauth.a \
-	 ${TOP_LIBDIR}/libafscom_err.a \
-	 ${TOP_LIBDIR}/libcmd.a \
-	 ${TOP_LIBDIR}/librx.a \
-	 ${TOP_LIBDIR}/libafshcrypto_lwp.a \
-	 ${TOP_LIBDIR}/libsys.a \
-	 ${TOP_LIBDIR}/liblwp.a \
-	 $(TOP_LIBDIR)/libopr.a \
-	 $(TOP_LIBDIR)/libafsutil.a
+CMLIBS=$(top_builddir)/src/fsint/liboafs_fsint.la \
+	 $(top_builddir)/src/cmd/liboafs_cmd.la \
+	 $(top_builddir)/src/util/liboafs_util.la \
+	 $(top_builddir)/src/opr/liboafs_opr.la
 
 LIBS = ${FSLIBS}
 
@@ -82,32 +63,32 @@ afsio: ${AFSIO_objs} ${AFSIO_LIBS}
 		$(LDFLAGS_krb5) $(LIB_krb5)
 
 cacheout: cacheout.o
-	$(AFS_LDRULE) cacheout.o ${LIBS} $(LIB_roken) ${XLIBS} ${CMLIBS}
+	$(LT_LDRULE_static) cacheout.o ${LIBS} $(LIB_roken) ${MT_LIBS} ${CMLIBS}
 
 cmdebug: cmdebug.o ${CMLIBS}
-	$(AFS_LDRULE) cmdebug.o ${CMLIBS} $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) cmdebug.o ${CMLIBS} $(LIB_roken) ${MT_LIBS}
 
 fs: fs.o $(LIBS)
-	$(AFS_LDRULE) fs.o ${TOP_LIBDIR}/libprot.a $(LIBS) \
-		$(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) fs.o $(top_builddir)/src/ptserver/liboafs_prot.la $(LIBS) \
+		$(LIB_roken) $(MT_LIBS)
 
 fstrace: fstrace.o
-	$(AFS_LDRULE) fstrace.o $(LIBS) $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) fstrace.o $(LIBS) $(LIB_roken) ${MT_LIBS}
 
 gcpags: gcpags.o $(LIBS)
-	$(AFS_LDRULE) gcpags.o $(LIBS) $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) gcpags.o $(LIBS) $(LIB_roken) ${MT_LIBS}
 
 livesys: livesys.o $(LIBS)
-	$(AFS_LDRULE) livesys.o $(LIBS) $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) livesys.o $(LIBS) $(LIB_roken) ${MT_LIBS}
 
 twiddle: twiddle.o $(LIBS)
-	$(AFS_LDRULE) twiddle.o $(LIBS) $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) twiddle.o $(LIBS) $(LIB_roken) ${MT_LIBS}
 
 up: up.o
-	$(AFS_LDRULE) up.o ${LIBS} $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) up.o ${LIBS} $(LIB_roken) ${MT_LIBS}
 
 whatfid: whatfid.o ${LIBS}
-	$(AFS_LDRULE) whatfid.o ${LIBS} $(LIB_roken) ${XLIBS}
+	$(LT_LDRULE_static) whatfid.o ${LIBS} $(LIB_roken) ${MT_LIBS}
 
 #
 # Compile targets
