@@ -62,6 +62,9 @@ struct volume *afs_volumes[NVOLS];
 afs_int32 afs_volCounter = 1;	/** for allocating volume indices */
 afs_int32 fvTable[NFENTRIES];
 
+/* How long (in seconds) to invalidate 'struct volume's that have no sites */
+static afs_int32 afs_siteless_volume_ttl = 300;
+
 /* Forward declarations */
 static struct volume *afs_NewVolumeByName(char *aname, afs_int32 acell,
 					  int agood, struct vrequest *areq,
@@ -420,6 +423,12 @@ afs_ResetVolumes(struct server *srvp, struct volume *tv)
  * Dynroot volumes are not setup from vldb queries, so never expire.
  * Read-only volume expiry is tied to the volume callback.
  *
+ * Site-less volume entries are invalidated more frequently. Since these entries
+ * do not map to any fileserver, earlier invalidation allows the client to
+ * re-fetch the corresponding VLDB entries sooner, avoiding prolonged loss of
+ * access even after the VLDB has been updated with valid fileserver locations
+ * for the volumes in question.
+ *
  * Optionally, invalidate volume information after a fixed timeout.
  * The vlservers will be periodically probed for volume information.
  * This avoids a situation where the vldb information is cached
@@ -438,6 +447,10 @@ IsExpired(struct volume *tv, afs_int32 now)
 	return 0;
     }
     if ((tv->states & VRO) && (tv->expireTime < (now + 10))) {
+	return 1;
+    }
+    if ((tv->serverHost[0] == NULL) &&
+	((tv->setupTime + afs_siteless_volume_ttl) < now)) {
 	return 1;
     }
     if ((afs_volume_ttl != 0) && ((tv->setupTime + afs_volume_ttl) < now)) {
