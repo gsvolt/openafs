@@ -171,8 +171,8 @@ Krmtsys.xdr.c: rmtsys.xg
 Krmtsys.h: rmtsys.xg
 	${RXGEN} -A -k -h -o Krmtsys.h ${srcdir}/rmtsys.xg
 
-rmtsysd: rmtsysd.o libsys.a
-	$(AFS_LDRULE) rmtsysd.o ${LIBS} $(LIB_roken)
+rmtsysd: rmtsysd.o liboafs_sys.la
+	$(LT_LDRULE_static) rmtsysd.o liboafs_sys.la $(MT_LIBS)
 
 
 
