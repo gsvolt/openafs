@@ -1371,7 +1371,7 @@ HandleBulk(struct cmd_syndesc *a_as, void *a_rock)
 	/* After executing the line, print the line and the result */
 	if (line_no) {
 	    if (error == UNOQUORUM) {
-		IOMGR_Sleep(1);
+		sleep(1);
 	    }
 
 	    if (!error)

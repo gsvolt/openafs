@@ -7,7 +7,7 @@
 
 srcdir=@srcdir@
 include @TOP_OBJDIR@/src/config/Makefile.config
-include @TOP_OBJDIR@/src/config/Makefile.lwp
+include @TOP_OBJDIR@/src/config/Makefile.pthread
 
 
 all: uss
@@ -15,23 +15,10 @@ all: uss
 #
 # Build targets
 #
-LIBS=${TOP_LIBDIR}/libvolser.a \
-	${TOP_LIBDIR}/libvldb.a  \
-	${TOP_LIBDIR}/libkauth.a \
-	${TOP_LIBDIR}/libprot.a \
-	${TOP_LIBDIR}/libubik.a \
-	${TOP_LIBDIR}/libauth.a \
-	${TOP_LIBDIR}/librxkad.a \
-	${TOP_LIBDIR}/libsys.a \
-	${TOP_LIBDIR}/librx.a \
-	${TOP_LIBDIR}/libsys.a \
-	${TOP_LIBDIR}/liblwp.a \
-	${TOP_LIBDIR}/libcmd.a \
-	${TOP_LIBDIR}/libafscom_err.a \
-	${TOP_LIBDIR}/util.a \
-	${TOP_LIBDIR}/libopr.a \
-	${TOP_LIBDIR}/libafsrfc3961.a \
-	${TOP_LIBDIR}/libafshcrypto_lwp.a
+LT_deps=$(top_builddir)/src/kauth/liboafs_kauth.la \
+	 $(top_builddir)/src/volser/liboafs_volser.la \
+	 $(top_builddir)/src/cmd/liboafs_cmd.la \
+	 $(top_builddir)/src/opr/liboafs_opr.la
 
 OBJS =  uss_procs.o \
 	uss_common.o \
@@ -43,8 +30,8 @@ OBJS =  uss_procs.o \
 	lex.yy.o \
 	y.tab.o
 
-uss: uss.o ${OBJS} $(LIBS)
-	$(AFS_LDRULE) uss.o ${OBJS} ${LIBS} $(LIB_roken) $(LIB_crypt) $(XLIBS)
+uss: uss.o $(OBJS) $(LT_deps)
+	$(LT_LDRULE_static) uss.o $(OBJS) $(LT_deps) $(LIB_roken) $(MT_LIBS)
 
 uss.o:  uss.c AFS_component_version_number.c
 
