@@ -7,16 +7,11 @@
 
 srcdir=@srcdir@
 include @TOP_OBJDIR@/src/config/Makefile.config
-include @TOP_OBJDIR@/src/config/Makefile.lwp
+include @TOP_OBJDIR@/src/config/Makefile.pthread
 
-
-LIBS=${TOP_LIBDIR}/librx.a \
-     ${TOP_LIBDIR}/libafshcrypto_lwp.a \
-     ${TOP_LIBDIR}/liblwp.a \
-     ${TOP_LIBDIR}/libcmd.a \
-     ${TOP_LIBDIR}/libsys.a \
-     ${TOP_LIBDIR}/libopr.a \
-     ${TOP_LIBDIR}/libafsutil.a
+LT_deps=$(top_builddir)/src/cmd/liboafs_cmd.la \
+	 $(top_builddir)/src/util/liboafs_util.la \
+	 $(top_builddir)/src/rx/liboafs_rx.la
 
 all: rxdebug rxdumptrace
 
@@ -26,11 +21,11 @@ CFLAGS_rxdumptrace.o=-DDUMPTRACE
 rxdumptrace.o: ../rx/rx_trace.c
 	$(AFS_CCRULE) $(srcdir)/../rx/rx_trace.c
 
-rxdumptrace: rxdumptrace.o ${LIBS}
-	$(AFS_LDRULE) rxdumptrace.o  ${LIBS} $(LIB_roken) ${XLIBS}
+rxdumptrace: rxdumptrace.o $(LT_deps)
+	$(LT_LDRULE_static) rxdumptrace.o $(LT_deps) $(LIB_roken) $(MT_LIBS)
 
-rxdebug: rxdebug.o ${LIBS}
-	$(AFS_LDRULE) rxdebug.o ${LIBS} $(LIB_roken) ${XLIBS}
+rxdebug: rxdebug.o $(LT_deps)
+	$(LT_LDRULE_static) rxdebug.o $(LT_deps) $(LIB_roken) $(MT_LIBS)
 
 #
 # Install targets
