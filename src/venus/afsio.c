@@ -290,8 +290,7 @@ CmdProlog(struct cmd_syndesc *as, char **cellp, char **realmp,
 static void
 common_parms(struct cmd_syndesc *as)
 {
-    cmd_AddParm(as, "-as-user", CMD_SINGLE, CMD_OPTIONAL,
-		"impersonate user via localauth");
+    cmd_AddParm(as, "-as-user", CMD_SINGLE, CMD_OPTIONAL, "username");
 }
 
 int
